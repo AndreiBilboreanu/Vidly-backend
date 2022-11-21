@@ -6,12 +6,8 @@ const router = express.Router();
 
 // Get all movies
 router.get("/", async (req, res) => {
-  try {
-    const movies = await Movie.find();
-    res.send(movies);
-  } catch (ex) {
-    for (let field in ex.errors) console.log(ex.errors[field].message);
-  }
+  const movies = await Movie.find();
+  res.send(movies);
 });
 
 // Get a movie by id

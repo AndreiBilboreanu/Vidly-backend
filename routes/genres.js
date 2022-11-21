@@ -1,19 +1,18 @@
+const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const { Genres, validate } = require("../models/genre");
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 
-// Get courses
+// Get genres
 router.get("/", async (req, res) => {
-  try {
-    const genres = await Genres.find();
-    res.send(genres);
-  } catch (ex) {
-    return res.status(404).send(ex.errors.message);
-  }
+  throw new Error("Could not get the genres.");
+  const genres = await Genres.find();
+  res.send(genres);
 });
 
-// Get a specific course
+// Get a specific genre
 router.get("/:id", async (req, res) => {
   try {
     const genre = await Genres.findById(req.params.id);
@@ -23,8 +22,8 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Post a course
-router.post("/", async (req, res) => {
+// Post a genre
+router.post("/", auth, async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -41,8 +40,8 @@ router.post("/", async (req, res) => {
   res.send(genre);
 });
 
-// Post for update
-router.put("/:id", async (req, res) => {
+// Modify genres
+router.put("/:id", auth, async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   try {
@@ -59,7 +58,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete by id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   try {
     const genre = await Genres.deleteOne({ _id: req.params.id });
     res.send(genre);
