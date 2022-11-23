@@ -1,3 +1,4 @@
+const validateObjectId = require("../middleware/validateObjectId");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const { Genres, validate } = require("../models/genre");
@@ -7,19 +8,17 @@ const router = express.Router();
 
 // Get genres
 router.get("/", async (req, res) => {
-  throw new Error("Could not get the genres.");
+  // throw new Error("Could not get the genres.");
   const genres = await Genres.find();
   res.send(genres);
 });
 
 // Get a specific genre
-router.get("/:id", async (req, res) => {
-  try {
-    const genre = await Genres.findById(req.params.id);
-    res.send(genre);
-  } catch (ex) {
-    return res.status(404).send(ex.errors.message);
-  }
+router.get("/:id", validateObjectId, async (req, res) => {
+  const genre = await Genres.findById(req.params.id);
+  if (!genre)
+    return res.status(404).send("The genre with the given id doesn t exist");
+  res.send(genre);
 });
 
 // Post a genre
